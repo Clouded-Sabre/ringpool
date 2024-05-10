@@ -40,7 +40,7 @@ func main() {
 	pool := lib.NewRingPool(10, 100, newData)
 
 	// Get an element from the pool
-	element := pool.GetElement(newData)
+	element := pool.GetElement()
 	fmt.Println("The number of available element is", pool.AvailableChunks())
 
 	// Use the element
