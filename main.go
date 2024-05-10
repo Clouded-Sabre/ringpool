@@ -8,29 +8,30 @@ import (
 )
 
 // ConcreteData represents concrete data type
-type ConcreteData struct {
+type Payload struct {
 	content []byte
 }
 
-func (c *ConcreteData) SetContent(s string) {
-	c.content = []byte(s)
+func (p *Payload) SetContent(s string, element *lib.Element) {
+	p.content = []byte(s)
+	element.Length = len(s)
 }
 
 // Reset resets the content of the concrete data
-func (c *ConcreteData) Reset() {
+func (p *Payload) Reset() {
 	fmt.Print("")
 }
 
 // PrintContent prints the content of the concrete data
-func (c *ConcreteData) PrintContent(length int) {
-	fmt.Println("Content:", string(c.content[:length]))
+func (p *Payload) PrintContent(length int) {
+	fmt.Println("Content:", string(p.content[:length]))
 }
 
 func main() {
 	lib.Debug = true
 	// Define a function that creates a new instance of ConcreteData
 	newData := func(length int) lib.DataInterface {
-		return &ConcreteData{
+		return &Payload{
 			content: make([]byte, length),
 		}
 	}
@@ -43,9 +44,7 @@ func main() {
 	fmt.Println("The number of available element is", pool.AvailableChunks())
 
 	// Use the element
-	s := "Hohoho"
-	element.Data.(*ConcreteData).SetContent(s)
-	element.Length = len(s)
+	element.Data.(*Payload).SetContent("Hohoho", element)
 	element.Data.PrintContent(element.Length)
 
 	// Return the element to the pool
