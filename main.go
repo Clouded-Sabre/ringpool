@@ -10,42 +10,55 @@ import (
 // ConcreteData represents concrete data type
 type Payload struct {
 	content []byte
+	length  int
 }
 
-func (p *Payload) SetContent(s string, element *lib.Element) {
+func (p *Payload) SetContent(s string) {
 	p.content = []byte(s)
-	element.Length = len(s)
+	p.length = len(s)
 }
 
 // Reset resets the content of the concrete data
 func (p *Payload) Reset() {
-	fmt.Print("")
+	p.length = 0
 }
 
 // PrintContent prints the content of the concrete data
-func (p *Payload) PrintContent(length int) {
-	fmt.Println("Content:", string(p.content[:length]))
+func (p *Payload) PrintContent() {
+	fmt.Println("Content:", string(p.content[:p.length]))
 }
 
 func main() {
 	lib.Debug = true
 	// Define a function that creates a new instance of ConcreteData
-	newData := func(length int) lib.DataInterface {
+	newData := func(params ...interface{}) lib.DataInterface {
+		if len(params) != 1 {
+			// Handle error: invalid number of parameters
+			return nil
+		}
+
+		// Extract bufferLength from params
+		bufferLength, ok := params[0].(int)
+		if !ok {
+			// Handle error: invalid type for bufferLength
+			return nil
+		}
+
 		return &Payload{
-			content: make([]byte, length),
+			content: make([]byte, bufferLength),
 		}
 	}
 
 	// Create a new RingPool instance
-	pool := lib.NewRingPool(10, 100, newData)
+	pool := lib.NewRingPool(10, newData, 100)
 
 	// Get an element from the pool
 	element := pool.GetElement()
 	fmt.Println("The number of available element is", pool.AvailableChunks())
 
 	// Use the element
-	element.Data.(*Payload).SetContent("Hohoho", element)
-	element.Data.PrintContent(element.Length)
+	element.Data.(*Payload).SetContent("Hohoho")
+	element.Data.PrintContent()
 
 	// Return the element to the pool
 	pool.ReturnElement(element)

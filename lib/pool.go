@@ -12,28 +12,28 @@ var Debug bool
 type RingPool struct {
 	chunks          []*Element
 	capacity        int
-	chunkLength     int
 	readIdx         int
 	writeIdx        int
 	isFull, isEmpty bool
 	allocatedMap    map[int]*Element
 	mtx             sync.Mutex
 	newData         NewData
+	DataParams      []interface{}
 }
 
 // NewPayloadPool creates a new payload pool with the specified capacity and chunk length
-func NewRingPool(capacity int, chunkLength int, newData NewData) *RingPool {
+func NewRingPool(capacity int, newData NewData, params ...interface{}) *RingPool {
 	chunks := make([]*Element, capacity)
 	for i := 0; i < capacity; i++ {
-		chunks[i] = NewElement(i, chunkLength, newData)
+		chunks[i] = NewElement(i, newData, params...)
 	}
 
 	p := &RingPool{
 		chunks:       chunks,
 		capacity:     capacity,
-		chunkLength:  chunkLength,
 		allocatedMap: make(map[int]*Element),
 		newData:      newData,
+		DataParams:   params,
 	}
 
 	// start timeout checks for allocated chunks
@@ -52,7 +52,7 @@ func (p *RingPool) GetElement() *Element {
 	// Check if the pool is empty
 	if p.isEmpty {
 		log.Println("Chunk allocation: payload pool is empty, allocate more chunk will impact performance till some chunks are returned")
-		return NewElement(p.capacity+1, p.chunkLength, p.newData) // Pool is empty. Create new chunk manually
+		return NewElement(p.capacity+1, p.newData, p.DataParams...) // Pool is empty. Create new chunk manually
 	}
 
 	chunk := p.chunks[p.readIdx]

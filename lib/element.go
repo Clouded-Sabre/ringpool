@@ -8,29 +8,25 @@ import (
 // Payload represents a single chunk of payload
 type DataInterface interface {
 	Reset()
-	PrintContent(length int)
+	PrintContent()
 }
 
 type Element struct {
-	Data           DataInterface
-	Length         int // length of the real data
+	Data DataInterface
+	//Length         int // length of the real data
 	index          int
 	LastAllocation time.Time
 	CallStack      []string
 	StayAtChannel  string
 }
 
-type NewData func(length int) DataInterface
+type NewData func(params ...interface{}) DataInterface
 
 // NewChunk creates a new chunk with the given length
-func NewElement(index, length int, newData NewData) *Element {
+func NewElement(index int, newData NewData, params ...interface{}) *Element {
 	return &Element{
-		Data:   newData(length),
-		Length: 0,
-		index:  index,
-		//LastAllocation: time.Time{},
-		CallStack:     nil,
-		StayAtChannel: "",
+		Data:  newData(params...),
+		index: index,
 	}
 }
 
@@ -66,12 +62,12 @@ func (e *Element) PrintCallStack() {
 		fmt.Println("Chunk@channel:", e.StayAtChannel)
 	}
 	fmt.Println()
-	e.Data.PrintContent(e.Length)
+	e.Data.PrintContent()
 }
 
 // Reset resets necessary fields after chunk is returned
 func (e *Element) Reset() {
-	e.Length = 0
+	//e.Length = 0
 	e.LastAllocation = time.Time{}
 	e.CallStack = nil
 	e.Data.Reset()
