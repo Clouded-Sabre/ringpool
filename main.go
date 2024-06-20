@@ -50,7 +50,7 @@ func main() {
 	}
 
 	// Create a new RingPool instance
-	pool := lib.NewRingPool(10, newData, 100)
+	pool := lib.NewRingPool("test", 10, newData, 100)
 
 	// Get an element from the pool
 	element := pool.GetElement()
