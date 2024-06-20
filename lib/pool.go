@@ -30,6 +30,7 @@ func NewRingPool(name string, capacity int, newData NewData, params ...interface
 	}
 
 	p := &RingPool{
+		Name:         name,
 		chunks:       chunks,
 		capacity:     capacity,
 		allocatedMap: make(map[int]*Element),
