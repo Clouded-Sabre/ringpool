@@ -16,8 +16,7 @@ type Element struct {
 	//Length         int // length of the real data
 	index          int
 	LastAllocation time.Time
-	CallStack      []string
-	StayAtChannel  string
+	footprints     []string
 }
 
 type NewData func(params ...interface{}) DataInterface
@@ -31,35 +30,29 @@ func NewElement(index int, newData NewData, params ...interface{}) *Element {
 }
 
 // AddCallStack adds a function string to the call stack of the chunk
-func (e *Element) AddCallStack(funcString string) {
-	e.CallStack = append(e.CallStack, funcString)
+func (e *Element) AddFootPrint(funcString string) int {
+	e.footprints = append(e.footprints, funcString)
+
+	return len(e.footprints) - 1
 }
 
 // PopCallStack removes the last function string from the call stack of the chunk
-func (e *Element) PopCallStack() {
-	if len(e.CallStack) > 0 {
-		e.CallStack = e.CallStack[:len(e.CallStack)-1]
+func (e *Element) TickFootPrint(pos int) {
+	if pos >= 0 && pos < len(e.footprints) {
+		e.footprints[pos] = e.footprints[pos] + "✓"
 	}
 }
 
 // AddToChannel assign a channel string to StayAtChannel of the chunk
-func (e *Element) AddToChannel(channelString string) {
-	e.StayAtChannel = channelString
-}
-
-func (e *Element) RemoveFromChannel() {
-	e.StayAtChannel = ""
+func (e *Element) AddChannel(channelString string) int {
+	return e.AddFootPrint("(" + channelString + ")")
 }
 
 // PrintCallStack prints the call stack of the chunk
 func (e *Element) PrintCallStack() {
 	fmt.Print("Call Stack:")
-	for _, call := range e.CallStack {
+	for _, call := range e.footprints {
 		fmt.Printf(" -> %s", call)
-	}
-	fmt.Println()
-	if len(e.StayAtChannel) > 0 {
-		fmt.Println("Chunk@channel:", e.StayAtChannel)
 	}
 	fmt.Println()
 	e.Data.PrintContent()
@@ -67,9 +60,8 @@ func (e *Element) PrintCallStack() {
 
 // Reset resets necessary fields after chunk is returned
 func (e *Element) Reset() {
-	//e.Length = 0
 	e.LastAllocation = time.Time{}
-	e.CallStack = nil
+	e.footprints = nil
 	e.Data.Reset()
 }
 
