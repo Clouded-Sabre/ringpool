@@ -50,7 +50,7 @@ func (e *Element) AddChannel(channelString string) int {
 
 // PrintCallStack prints the call stack of the chunk
 func (e *Element) PrintCallStack() {
-	fmt.Print("Call Stack:")
+	fmt.Print("Footprints:")
 	for _, call := range e.footprints {
 		fmt.Printf(" -> %s", call)
 	}
