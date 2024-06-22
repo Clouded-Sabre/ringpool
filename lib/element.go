@@ -43,9 +43,15 @@ func (e *Element) TickFootPrint(pos int) {
 	}
 }
 
-// AddToChannel assign a channel string to StayAtChannel of the chunk
+// AddChannel assign a channel string to footprints of the chunk
 func (e *Element) AddChannel(channelString string) int {
 	return e.AddFootPrint("(" + channelString + ")")
+}
+
+// AddChannel assign a channel string to footprints of the chunk
+func (e *Element) TickChannel() {
+	pos := len(e.footprints) - 1 // the last one
+	e.footprints[pos] = e.footprints[pos] + "✓"
 }
 
 // PrintCallStack prints the call stack of the chunk
