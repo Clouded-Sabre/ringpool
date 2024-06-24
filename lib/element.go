@@ -17,6 +17,7 @@ type Element struct {
 	index          int
 	LastAllocation time.Time
 	footprints     []string
+	isAllocated    bool
 }
 
 type NewData func(params ...interface{}) DataInterface
@@ -68,6 +69,7 @@ func (e *Element) PrintCallStack() {
 func (e *Element) Reset() {
 	e.LastAllocation = time.Time{}
 	e.footprints = nil
+	e.isAllocated = false
 	e.Data.Reset()
 }
 

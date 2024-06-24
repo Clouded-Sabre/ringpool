@@ -67,6 +67,7 @@ func (p *RingPool) GetElement() *Element {
 
 	p.isFull = false
 
+	chunk.isAllocated = true
 	// Add the chunk to allocatedMap
 	p.allocatedMap[chunk.index] = chunk
 
@@ -75,6 +76,10 @@ func (p *RingPool) GetElement() *Element {
 
 // ReturnPayload returns a payload to the pool
 func (p *RingPool) ReturnElement(element *Element) {
+	if !element.isAllocated {
+		return
+	}
+
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
