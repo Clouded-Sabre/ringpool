@@ -2,6 +2,7 @@ package lib
 
 import (
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -39,8 +40,12 @@ func (e *Element) AddFootPrint(funcString string) int {
 
 // PopCallStack removes the last function string from the call stack of the chunk
 func (e *Element) TickFootPrint(pos int) {
-	if pos >= 0 && pos < len(e.footprints) {
-		e.footprints[pos] = e.footprints[pos] + "✓"
+	if e.isAllocated {
+		if pos >= 0 && pos < len(e.footprints) {
+			e.footprints[pos] = e.footprints[pos] + "✓"
+		}
+	} else {
+		log.Println("Element cannot be ticked because it is already been returned to pool.")
 	}
 }
 
@@ -51,8 +56,13 @@ func (e *Element) AddChannel(channelString string) int {
 
 // AddChannel assign a channel string to footprints of the chunk
 func (e *Element) TickChannel() {
-	pos := len(e.footprints) - 1 // the last one
-	e.footprints[pos] = e.footprints[pos] + "✓"
+	if e.isAllocated {
+		pos := len(e.footprints) - 1 // the last one
+		e.footprints[pos] = e.footprints[pos] + "✓"
+	} else {
+		log.Println("Element cannot be ticked because it is already been returned to pool.")
+	}
+
 }
 
 // PrintCallStack prints the call stack of the chunk
