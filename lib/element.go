@@ -57,8 +57,12 @@ func (e *Element) AddChannel(channelString string) int {
 // AddChannel assign a channel string to footprints of the chunk
 func (e *Element) TickChannel() {
 	if e.isAllocated {
-		pos := len(e.footprints) - 1 // the last one
-		e.footprints[pos] = e.footprints[pos] + "✓"
+		if len(e.footprints) > 0 {
+			pos := len(e.footprints) - 1 // the last one
+			e.footprints[pos] = e.footprints[pos] + "✓"
+		} else {
+			log.Println("TickChannel: There is no channel to be ticked!")
+		}
 	} else {
 		log.Println("Element cannot be ticked because it is already been returned to pool.")
 	}
