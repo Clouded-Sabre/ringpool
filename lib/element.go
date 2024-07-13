@@ -44,7 +44,7 @@ func (e *Element) AddFootPrint(funcString string) int {
 		lastFootprint := e.footprints[len(e.footprints)-1]
 		duration := now.Sub(lastFootprint.Timestamp)
 		//threshold := 100 * time.Millisecond // example threshold
-		if duration > e.pool.processTimeThreshold {
+		if duration > e.pool.ProcessTimeThreshold {
 			log.Printf("Time since last footprint exceeded: %s -> %s, duration: %v\n",
 				lastFootprint.Function, funcString, duration)
 		}

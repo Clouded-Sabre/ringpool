@@ -21,7 +21,7 @@ type RingPool struct {
 	newData              NewData
 	DataParams           []interface{}
 	Debug                bool
-	processTimeThreshold time.Duration
+	ProcessTimeThreshold time.Duration
 }
 
 // NewPayloadPool creates a new payload pool with the specified capacity and chunk length
