@@ -10,24 +10,23 @@ var Debug bool
 
 // GenericPayloadPool is a generic implementation of PayloadPool
 type RingPool struct {
-	Name            string // name of the ring pool for debug purpose
-	chunks          []*Element
-	capacity        int
-	readIdx         int
-	writeIdx        int
-	isFull, isEmpty bool
-	allocatedMap    map[int]*Element
-	mtx             sync.Mutex
-	newData         NewData
-	DataParams      []interface{}
+	Name                 string // name of the ring pool for debug purpose
+	chunks               []*Element
+	capacity             int
+	readIdx              int
+	writeIdx             int
+	isFull, isEmpty      bool
+	allocatedMap         map[int]*Element
+	mtx                  sync.Mutex
+	newData              NewData
+	DataParams           []interface{}
+	Debug                bool
+	processTimeThreshold time.Duration
 }
 
 // NewPayloadPool creates a new payload pool with the specified capacity and chunk length
 func NewRingPool(name string, capacity int, newData NewData, params ...interface{}) *RingPool {
 	chunks := make([]*Element, capacity)
-	for i := 0; i < capacity; i++ {
-		chunks[i] = NewElement(i, newData, params...)
-	}
 
 	p := &RingPool{
 		Name:         name,
@@ -36,6 +35,10 @@ func NewRingPool(name string, capacity int, newData NewData, params ...interface
 		allocatedMap: make(map[int]*Element),
 		newData:      newData,
 		DataParams:   params,
+	}
+
+	for i := 0; i < capacity; i++ {
+		chunks[i] = NewElement(p, i, newData, params...)
 	}
 
 	// start timeout checks for allocated chunks
@@ -54,7 +57,7 @@ func (p *RingPool) GetElement() *Element {
 	// Check if the pool is empty
 	if p.isEmpty {
 		log.Println(p.Name + "Chunk allocation: payload pool is empty, allocate more chunk will impact performance till some chunks are returned")
-		return NewElement(p.capacity+1, p.newData, p.DataParams...) // Pool is empty. Create new chunk manually
+		return NewElement(p, p.capacity+1, p.newData, p.DataParams...) // Pool is empty. Create new chunk manually
 	}
 
 	chunk := p.chunks[p.readIdx]
